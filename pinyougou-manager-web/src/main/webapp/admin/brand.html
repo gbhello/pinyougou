@@ -9,8 +9,7 @@
 	name="viewport">
 <link rel="stylesheet" href="../plugins/bootstrap/css/bootstrap.min.css">
 <link rel="stylesheet" href="../plugins/adminLTE/css/AdminLTE.css">
-<link rel="stylesheet"
-	href="../plugins/adminLTE/css/skins/_all-skins.min.css">
+<link rel="stylesheet" href="../plugins/adminLTE/css/skins/_all-skins.min.css">
 <link rel="stylesheet" href="../css/style.css">
 
 
@@ -18,112 +17,16 @@
 <script src="../plugins/bootstrap/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="../plugins/angularjs/angular.min.js"></script>
 
-<!-- 一定要注意注意再注意，pagination的引用需要再angular的后面引入，因为pagination是基于angular
-    否则会报出“angular未定义”的错误
-     -->
 <!-- 分页组件开始 -->
 <script src="../plugins/angularjs/pagination.js"></script>
 <link rel="stylesheet" href="../plugins/angularjs/pagination.css">
+
+
+<script type="text/javascript" src="../js/base_pagination.js"></script>
+<script type="text/javascript" src="../js/service/brandService.js"></script>
+<script type="text/javascript" src="../js/controller/baseController.js"></script>
+<script type="text/javascript" src="../js/controller/brandController.js"></script>
 <!-- 分页组件结束 -->
-<script type="text/javascript">
-	var app = angular.module('pinyougou', [ 'pagination' ]);//定义模块
-	app.controller('brandController', function($scope, $http) {
-		//读取列表数据绑定到表单中
-		$scope.findAll = function() {
-			$http.get('../brand/findAll.do').success(function(response) {
-				$scope.list = response;
-			});
-		}
-
-		//重新加载列表
-		$scope.reloadList = function() {
-			//切换页码
-			$scope.search($scope.paginationConf.currentPage,
-					$scope.paginationConf.itemsPerPage);
-		}
-
-		//分页控件配置
-		$scope.paginationConf = {
-			currentPage : 1,
-			totalItems : 10,
-			itemsPerPage : 10,
-			perPageOptions : [ 10, 20, 30, 40, 50 ],
-			onChange : function() {
-				$scope.reloadList();//重新加载
-			}
-		};
-
-		//分页
-		$scope.findPage = function(page, rows) {
-			$http.get('../brand/findPage.do?page=' + page + '&rows=' + rows)
-					.success(function(response) {
-						$scope.list = response.rows;
-						$scope.paginationConf.totalItems = response.total;//更新总记录数
-					});
-		}
-
-		//保存
-		$scope.save = function() {
-			var methodName = 'add';//方法名称
-			if ($scope.entity.id != null) {//如果触发save方法的请求中含有id值，则是修改方法
-				methodName = 'update';//
-			}
-			$http.post('../brand/' + methodName + '.do', $scope.entity)
-					.success(function(response) {
-						if (response.success) {
-							//重新查询，刷新页面信息
-							$scope.reloadList();
-						} else {
-							alert(response.message);
-						}
-					});
-		}
-
-		//查询实体，用于修改功能信息回显
-		$scope.findOne = function(id) {
-			$http.get('/brand/findOne.do?id=' + id).success(function(response) {
-				$scope.entity = response;
-			});
-		}
-
-		//选中的ID集合
-		$scope.selectIds = [];
-		//更新复选
-		$scope.updateSelection = function($event, id) {
-			if ($event.target.checked) {//如果是被选中，则增加到数组
-				$scope.selectIds.push(id);
-			} else {
-				var idx = $scope.selectIds.indexOf(id);
-				$scope.selectIds.splice(idx, 1);//删除
-			}
-		}
-
-		//批量删除
-		$scope.dele = function() {
-			//获取选中的复选框
-			$http.get('../brand/delete.do?ids=' + $scope.selectIds).success(
-					function(response) {
-						if (response.success) {
-							$scope.reloadList();//刷新列表
-						} else {
-							alert(response.message);
-						}
-					});
-		}
-		
-		//定义搜索对象
-		$scope.searchEntity={};
-		//条件查询
-		$scope.search=function(page,rows){
-			$http.post('../brand/search.do?page='+page+"&rows="+rows,$scope.searchEntity).success(
-				function(response){
-					$scope.paginationConf.totalItems=response.total;//总记录数
-					$scope.list=response.rows;//给列表变量赋值
-				}		
-			);
-		}
-	});
-</script>
 
 </head>
 <body class="hold-transition skin-red sidebar-mini" ng-app="pinyougou"
@@ -159,7 +62,8 @@
 			</div>
 			<div class="box-tools pull-right">
 				<div class="has-feedback">
-					品牌名称：<input ng-model="searchEntity.name">品牌首字母：<input ng-model="searchEntity.firstChar"> 
+					品牌名称：<input ng-model="searchEntity.name">品牌首字母：<input
+						ng-model="searchEntity.firstChar">
 					<button class="btn btn-default" ng-click="reloadList()">查询</button>
 				</div>
 			</div>
