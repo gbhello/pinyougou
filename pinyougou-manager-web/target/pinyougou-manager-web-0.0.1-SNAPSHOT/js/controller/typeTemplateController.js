@@ -1,6 +1,5 @@
  //控制层 
-//app.controller('typeTemplateController' ,function($scope,$controller,typeTemplateService,brandService,specificationService){
-	app.controller('typeTemplateController' ,function($scope,$controller,typeTemplateService,brandService){
+	app.controller('typeTemplateController' ,function($scope,$controller,typeTemplateService,brandService,specificationService){
 	
 	$controller('baseController',{$scope:$scope});//继承
 	
@@ -100,13 +99,13 @@
 	$scope.specList={data:[]};//规格列表
 	
 	//读取规格列表
-//	$scope.findSpecList=function(){
-//		specificationService.selectOptionList().success(
-//				function(response){
-//					$scope.specList={data:response};
-//				}
-//		);		
-//	}
+	$scope.findSpecList=function(){
+		specificationService.selectOptionList().success(
+				function(response){
+					$scope.specList={data:response};
+				}
+		);		
+	}
 	
 	//增加扩展属性行
 	$scope.addTableRow=function(){
@@ -114,7 +113,7 @@
 	}
 	//删除扩展属性行
 	$scope.deleTableRow=function(index){
-		$scope.entity.customAttributeItems.splice( index,1);
+		$scope.entity.customAttributeItems.splice(index,1);
 	}
 	
 });	

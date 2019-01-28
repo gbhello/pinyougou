@@ -28,4 +28,17 @@ app.controller('baseController',function($scope){
 			$scope.selectIds.splice(idx, 1);// 删除
 		}
 	}
+	
+	//提取json字符串数据中某个属性，返回拼接字符串，逗号分隔
+	$scope.jsonToString=function(jsonString,key){
+		var json = JSON.parse(jsonString);//将json字符串转化为json对象
+		var value="";
+		for(var i=0;i<json.length;i++){
+			if(i>0){
+				value+=",";
+			}
+			value+=json[i][key];
+		}
+		return value;
+	}
 });
