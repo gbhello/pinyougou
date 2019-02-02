@@ -112,6 +112,5 @@ public class TypeTemplateController {
 		return typeTemplateService.findPage(typeTemplate, page, rows);		
 	}
 	
-
 	
 }
