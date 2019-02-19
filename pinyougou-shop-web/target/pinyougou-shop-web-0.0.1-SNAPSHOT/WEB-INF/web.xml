@@ -36,6 +36,16 @@
   	<url-pattern>*.do</url-pattern>
   </servlet-mapping>
   
+  <!-- log4j日志配置 -->
+  <context-param>
+  	<param-name>log4jConfigLocation</param-name>
+  	<param-value>classpath:config/log4j.properties</param-value>
+  </context-param>
+  <listener>
+  	<description>log4j配置加载器</description>
+  	<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+  </listener>
+  
   <context-param>
   	<param-name>contextConfigLocation</param-name>
   	<param-value>classpath:spring/spring-security.xml</param-value>

@@ -35,7 +35,7 @@ public interface GoodsService {
 	/**
 	 * 修改
 	 */
-	public void update(TbGoods goods);
+	public void update(Goods goods);
 	
 
 	/**
@@ -43,7 +43,7 @@ public interface GoodsService {
 	 * @param id
 	 * @return
 	 */
-	public TbGoods findOne(Long id);
+	public Goods findOne(Long id);
 	
 	
 	/**
@@ -60,4 +60,17 @@ public interface GoodsService {
 	 */
 	public PageResult findPage(TbGoods goods, int pageNum,int pageSize);
 	
+	/**
+	 * 批量修改状态
+	 * @param ids
+	 * @param status1
+	 */
+	public void updateStatus(Long[] ids,String status);
+
+	/**
+	 * 更新商品上架状态
+	 * @param ids
+	 * @param isMarketable
+	 */
+	public void updateIsMarketable(Long[] ids, String isMarketable);
 }
