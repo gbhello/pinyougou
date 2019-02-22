@@ -17,7 +17,7 @@ import entity.Result;
 @RestController
 public class UploadController {
 
-	@Value("{FILE_SERVER_URL}")
+	@Value("${FILE_SERVER_URL}")
 	private String FILE_SERVER_URL;// 文件服务器地址
 
 	@RequestMapping("/upload")

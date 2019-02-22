@@ -137,13 +137,6 @@ app.controller('goodsController', function($scope, $controller, $location,
 		});
 	}
 
-	$scope.entity = {
-		goods : {},
-		goodsDesc : {
-			itemImages : [],
-			specificationItems : []
-		}
-	};// 定义页面实体结构
 	// 添加图片列表
 	$scope.add_image_entity = function() {
 		$scope.entity.goodsDesc.itemImages.push($scope.image_entity);

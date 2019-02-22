@@ -46,6 +46,7 @@
   	<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
   </listener>
   
+  <!-- springsecurity相关配置 -->
   <context-param>
   	<param-name>contextConfigLocation</param-name>
   	<param-value>classpath:spring/spring-security.xml</param-value>
