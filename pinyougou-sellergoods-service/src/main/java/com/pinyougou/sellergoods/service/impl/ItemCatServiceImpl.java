@@ -3,6 +3,7 @@ package com.pinyougou.sellergoods.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.github.pagehelper.Page;
@@ -21,11 +22,14 @@ import entity.PageResult;
  * @author Administrator
  *
  */
-@Service
+@Service(timeout=600000)
 public class ItemCatServiceImpl implements ItemCatService {
 
 	@Autowired
 	private TbItemCatMapper itemCatMapper;
+	
+	@Autowired
+	private RedisTemplate redisTemplate;
 
 	/**
 	 * 查询全部
@@ -102,11 +106,19 @@ public class ItemCatServiceImpl implements ItemCatService {
 		return new PageResult(page.getTotal(), page.getResult());
 	}
 
+	
 	@Override
 	public List<TbItemCat> findByParentId(Long parentId) {
 		TbItemCatExample example = new TbItemCatExample();
 		Criteria criteria = example.createCriteria();
 		criteria.andParentIdEqualTo(parentId);
+		
+		//每次执行查询的时候，一次性读取缓存进行存储（因为每次增删改查都要执行此方法）
+		List<TbItemCat> list = findAll();
+		for (TbItemCat itemCat : list) {
+			redisTemplate.boundHashOps("itemCat").put(itemCat.getName(),itemCat.getTypeId());
+		}
+		
 		return itemCatMapper.selectByExample(example);
 	}
 
