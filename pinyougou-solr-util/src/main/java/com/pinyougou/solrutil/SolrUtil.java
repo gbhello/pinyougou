@@ -1,5 +1,8 @@
 package com.pinyougou.solrutil;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -36,17 +39,19 @@ public class SolrUtil {
 		for (TbItem item : itemList) {
 			Map specMap = JSON.parseObject(item.getSpec());// 将spec字段中的json字符串转换为map
 			item.setSpecMap(specMap);// 给带注解的字段赋值
-			System.out.println(item.getTitle());
 		}
 		solrTemplate.saveBeans(itemList);
 		solrTemplate.commit();
 		System.out.println("====结束====");
 	}
 	
-	public static void main(String[] args) {
+	public void updateSolr() {
 		ApplicationContext context = new ClassPathXmlApplicationContext(
 				"classpath*:spring/applicationContext*.xml");
 		SolrUtil solrUtil = (SolrUtil) context.getBean("solrUtil");
 		solrUtil.importItemData();
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String today = simpleDateFormat.format(new Date());
+		System.out.println(today+"索引已更新完成");
 	}
 }

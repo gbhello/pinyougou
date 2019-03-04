@@ -20,6 +20,7 @@ public class TbItem implements Serializable {
 	@Field("item_price")
 	private BigDecimal price;
 	
+	@Field("item_salecount")
 	private Integer stockCount;
 	
 	private Integer num;
@@ -35,6 +36,7 @@ public class TbItem implements Serializable {
 	
 	private Date createTime;
 	
+	@Field("item_updatetime")
 	private Date updateTime;
 	
 	private String itemSn;

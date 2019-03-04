@@ -1,3 +1,0 @@
-0:0:0:0:0:0:0:1 - - [03/Feb/2019:00:00:42 +0800] "POST /goods/update.do HTTP/1.1" 200 42 http-bio-9102-exec-3 92429
-0:0:0:0:0:0:0:1 - - [03/Feb/2019:00:06:53 +0800] "POST /goods/update.do HTTP/1.1" 200 42 http-bio-9102-exec-1 18987
-0:0:0:0:0:0:0:1 - - [03/Feb/2019:00:10:48 +0800] "POST /goods/update.do HTTP/1.1" 200 42 http-bio-9102-exec-2 166231

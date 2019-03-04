@@ -1,35 +1,22 @@
 package com.pinyougou.sellergoods.service.impl;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.pinyougou.mapper.TbBrandMapper;
-import com.pinyougou.mapper.TbGoodsDescMapper;
-import com.pinyougou.mapper.TbGoodsMapper;
-import com.pinyougou.mapper.TbItemCatMapper;
-import com.pinyougou.mapper.TbItemMapper;
-import com.pinyougou.mapper.TbSellerMapper;
-import com.pinyougou.pojo.TbBrand;
-import com.pinyougou.pojo.TbGoods;
-import com.pinyougou.pojo.TbGoodsDesc;
-import com.pinyougou.pojo.TbGoodsExample;
+import com.pinyougou.mapper.*;
+import com.pinyougou.pojo.*;
 import com.pinyougou.pojo.TbGoodsExample.Criteria;
-import com.pinyougou.pojo.TbItem;
-import com.pinyougou.pojo.TbItemCat;
-import com.pinyougou.pojo.TbItemExample;
-import com.pinyougou.pojo.TbSeller;
 import com.pinyougou.pojogroup.Goods;
 import com.pinyougou.sellergoods.service.GoodsService;
-
 import entity.PageResult;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 服务实现层
@@ -37,7 +24,7 @@ import entity.PageResult;
  * @author Administrator
  *
  */
-@Service
+@Service(timeout=600000)
 @Transactional
 public class GoodsServiceImpl implements GoodsService {
 
@@ -267,6 +254,16 @@ public class GoodsServiceImpl implements GoodsService {
 			goods.setIsMarketable(isMarketable);
 			goodsMapper.updateByPrimaryKey(goods);
 		}
+	}
+
+	@Override
+	public List<TbItem> findItemListByGoodsIdandStatus(Long[] goodsIds,
+			String status) {
+		TbItemExample example = new TbItemExample();
+		com.pinyougou.pojo.TbItemExample.Criteria criteria = example.createCriteria();
+		criteria.andGoodsIdIn(Arrays.asList(goodsIds));
+		criteria.andStatusEqualTo(status);
+		return itemMapper.selectByExample(example);
 	}
 	
 }

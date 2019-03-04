@@ -1,10 +1,10 @@
 package com.pinyougou.sellergoods.service;
-import java.util.List;
-
 import com.pinyougou.pojo.TbGoods;
+import com.pinyougou.pojo.TbItem;
 import com.pinyougou.pojogroup.Goods;
-
 import entity.PageResult;
+
+import java.util.List;
 /**
  * 服务层接口
  * @author Administrator
@@ -73,4 +73,12 @@ public interface GoodsService {
 	 * @param isMarketable
 	 */
 	public void updateIsMarketable(Long[] ids, String isMarketable);
+	
+	/**
+	 * 根据商品ID和状态查询Item表信息
+	 * @param goodsIds
+	 * @param status
+	 * @return
+	 */
+	public List<TbItem> findItemListByGoodsIdandStatus(Long[] goodsIds,String status);
 }

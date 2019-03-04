@@ -1,32 +1,20 @@
 package com.pinyougou.search.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
+import com.pinyougou.pojo.TbItem;
+import com.pinyougou.search.service.ItemSearchService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.solr.core.SolrTemplate;
+import org.springframework.data.solr.core.query.*;
+import org.springframework.data.solr.core.query.result.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.solr.core.SolrTemplate;
-import org.springframework.data.solr.core.query.Criteria;
-import org.springframework.data.solr.core.query.FilterQuery;
-import org.springframework.data.solr.core.query.GroupOptions;
-import org.springframework.data.solr.core.query.HighlightOptions;
-import org.springframework.data.solr.core.query.HighlightQuery;
-import org.springframework.data.solr.core.query.Query;
-import org.springframework.data.solr.core.query.SimpleFilterQuery;
-import org.springframework.data.solr.core.query.SimpleHighlightQuery;
-import org.springframework.data.solr.core.query.SimpleQuery;
-import org.springframework.data.solr.core.query.result.GroupEntry;
-import org.springframework.data.solr.core.query.result.GroupPage;
-import org.springframework.data.solr.core.query.result.GroupResult;
-import org.springframework.data.solr.core.query.result.HighlightEntry;
-import org.springframework.data.solr.core.query.result.HighlightPage;
-
-import com.alibaba.dubbo.config.annotation.Service;
-import com.pinyougou.pojo.TbItem;
-import com.pinyougou.search.service.ItemSearchService;
 
 @Service(timeout=600000)
 public class ItemSearchServiceImpl implements ItemSearchService {
@@ -56,6 +44,10 @@ public class ItemSearchServiceImpl implements ItemSearchService {
 
 	@Override
 	public Map<String, Object> search(Map searchMap) {
+		//关键字空格处理
+		String keywords = (String) searchMap.get("keywords");
+		searchMap.put("keywords", keywords.replace(" ", ""));
+		
 		Map<String, Object> map = new HashMap<>();
 		
 		//1.查询列表
@@ -121,6 +113,49 @@ public class ItemSearchServiceImpl implements ItemSearchService {
 			}
 		}
 		
+		//5.按价格筛选
+		if(!"".equals(searchMap.get("price"))){
+			String[] price = ((String) searchMap.get("price")).split("-");
+			if(!price[0].equals("0")){//如果区间起点不等于0
+				Criteria filterCriteria = new Criteria("item_price").greaterThanEqual(price[0]);
+				SimpleFilterQuery simpleFilterQuery = new SimpleFilterQuery(filterCriteria);
+				query.addFilterQuery(simpleFilterQuery);
+			}
+			if(!price[1].equals("*")){//如果区间重点不等于*
+				Criteria filterCriteriaUpper = new Criteria("item_price").lessThanEqual(price[1]);
+				SimpleFilterQuery simpleFilterQuery = new SimpleFilterQuery(filterCriteriaUpper);
+				query.addFilterQuery(simpleFilterQuery);
+			}
+		}
+		
+		//6.分页查询
+		Integer pageNo = (Integer) searchMap.get("pageNo");//提取页码
+		if(pageNo==null){
+			pageNo=1;//默认第一页
+		}
+		
+		Integer pageSize = (Integer) searchMap.get("pageSize");//魅夜记录数
+		if(pageSize==null){
+			pageSize=20;//默认20
+		}
+		query.setOffset((pageNo-1)*pageSize);//从第几条记录查询
+		query.setRows(pageSize);
+		
+		//7.排序
+		String sortValue=(String) searchMap.get("sort");//ASC DESC
+		String sortField=(String) searchMap.get("sortField");//排序字段
+		if(sortValue!=null && !sortValue.equals("")){
+			if(sortValue.equals("ASC")){
+				Sort sort = new Sort(Sort.Direction.ASC,"item_"+sortField);
+				query.addSort(sort);
+			}
+			if(sortValue.equals("DESC")){
+				Sort sort = new Sort(Sort.Direction.DESC,"item_"+sortField);
+				query.addSort(sort);
+			}
+		}
+		
+		
 		//高亮显示处理
 		HighlightPage<TbItem> page = solrTemplate.queryForHighlightPage(query,
 				TbItem.class);
@@ -133,6 +168,8 @@ public class ItemSearchServiceImpl implements ItemSearchService {
 
 		}
 		map.put("rows", page.getContent());
+		map.put("totalPages", page.getTotalPages());//返回总页数
+		map.put("total", page.getTotalElements());//返回总记录数
 		return map;
 	}
 	
@@ -163,6 +200,26 @@ public class ItemSearchServiceImpl implements ItemSearchService {
 		}
 		
 		return list;
+	}
+	
+	public void show(){
+		System.out.println("test"+System.currentTimeMillis());
+	}
+
+	@Override
+	public void importList(List list) {
+		solrTemplate.saveBeans(list);
+		solrTemplate.commit();
+	}
+
+	@Override
+	public void deleteByGoodsIds(List goodsIdList) {
+		System.out.println("删除商品ID"+goodsIdList);
+		SimpleQuery query = new SimpleQuery();
+		Criteria criteria = new Criteria("item_goodsid").in(goodsIdList);
+		query.addCriteria(criteria);
+		solrTemplate.delete(query);
+		solrTemplate.commit();
 	}
 	
 

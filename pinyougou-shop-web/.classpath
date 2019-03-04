@@ -39,5 +39,7 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry combineaccessrules="false" kind="src" path="/pinyougou-content-service"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/pinyougou-search-service"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
